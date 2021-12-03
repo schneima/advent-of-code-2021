@@ -63,12 +63,12 @@
         {
             var diagnosticNumbersLength = diagnosticReport[0].Length;
             var reportLineNumbers = diagnosticReport.Length;
-            var gamaRateBitArray = new int[diagnosticNumbersLength];
+            var gammaRateBitArray = new string[diagnosticNumbersLength];
 
             // for gamma rate: idea is to sum up bits at specific position, divided by half of report Length
             // => if >1 1 is most common bit
             // => if <1 0 is most common bit
-            // => if = 0 same count of 0/1 bits => error exception, undefined case!
+            // => if == 1 same count of 0/1 bits => error exception, undefined case!
             var positionSumDictionary = new Dictionary<int, int>();
 
             // for epsilon rate we just invert gamma rate bit number
@@ -81,37 +81,64 @@
                     var currentBitCharacter = currentLine[currentNumberPosition].ToString();
                     var value = int.Parse(currentBitCharacter);
 
-                    // save value or position
-                    positionSumDictionary[currentNumberPosition] += value;
+                    // add value to position if exists in dict already
+                    if (positionSumDictionary.ContainsKey(currentNumberPosition))
+                    {
+                        positionSumDictionary[currentNumberPosition] += value;
+                    }
+                    else
+                    {
+                        // else create new key + value
+                        positionSumDictionary.Add(currentNumberPosition, value);
+                    }
                 }
             }
 
             // get gamma reate
             for (int i = 0; i < diagnosticNumbersLength; i++)
             {
-                var averageBitValue = positionSumDictionary[i] / (diagnosticNumbersLength / 2);
-                gamaRateBitArray[i] = averageBitValue switch
+                var counter = positionSumDictionary[i];
+                var denominator = (decimal)(reportLineNumbers / 2);
+                decimal averageBitValue = counter / denominator;
+
+                switch (averageBitValue)
                 {
-                    > 1 => 1,
-                    < 0 => 0,
-                    0 => throw new Exception("Undefined UseCase!"),
-                    _ => gamaRateBitArray[i]
-                };
+                    case < 1:
+                        gammaRateBitArray[i] = "0";
+                        break;
+
+                    case > 1:
+                        gammaRateBitArray[i] = "1";
+                        break;
+                }
+
+                // first try
+                //gammaRateBitArray[i] = averageBitValue switch
+                //{
+                //    > 1 => "1",
+                //    < 1 => "0",
+                //    0 => throw new Exception("Undefined UseCase!"),
+                //    _ => gammaRateBitArray[i]
+                //};
             }
 
-            var gamaRate = GetGamaRateByBitArray(gamaRateBitArray);
-            var epslionRate = GetEpsilonRateByGamaBitRate(gamaRateBitArray);
-            return new ReportAnalysis(gamaRate, epslionRate);
+            var gammaBitNumber = string.Join("", gammaRateBitArray);
+            var gammaRate = GetGammaRateByBitValue(gammaBitNumber);
+            var epslionRate = GetEpsilonRateByGammaRate(gammaBitNumber);
+            return new ReportAnalysis(gammaRate, epslionRate);
         }
 
-        private int GetEpsilonRateByGamaBitRate(int[] gamaRateBitArray)
+        private int GetEpsilonRateByGammaRate(string gammaBitNumber)
         {
-            throw new NotImplementedException();
+            string invertedGamaBitValue = gammaBitNumber.Replace('0', '*').Replace('1', '0').Replace('*', '1');
+            var epsilonRate = Convert.ToInt32(invertedGamaBitValue, 2);
+            return epsilonRate;
         }
 
-        private int GetGamaRateByBitArray(int[] gamaRateBitArray)
+        private int GetGammaRateByBitValue(string gammaBitNumber)
         {
-            throw new NotImplementedException();
+            var gammaRate = Convert.ToInt32(gammaBitNumber, 2);
+            return gammaRate;
         }
     }
 }
