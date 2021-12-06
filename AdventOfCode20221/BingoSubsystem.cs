@@ -14,14 +14,14 @@
             return _winnerBoard;
         }
 
-        internal void StartGame()
+        internal void StartRegularGame()
         {
             _currentNumberIndex = 0;
-
+            bool regularGameVersion = true;
             while (StillLookingForWinner)
             {
                 var currentNumber = TakeNextNumber();
-                CheckBoardsForCurrentNumber(currentNumber);
+                CheckBoardsForCurrentNumber(currentNumber, regularGameVersion);
             }
         }
 
@@ -30,17 +30,40 @@
             return _lastTakenNumber;
         }
 
-        private void CheckBoardsForCurrentNumber(int currentNumber)
+        private void CheckBoardsForCurrentNumber(int currentNumber, bool regularGameVersion)
         {
-            foreach (var bingoBoard in _boards)
+            var currentBoards = _boards.ToArray();
+            foreach (var bingoBoard in currentBoards)
             {
                 bingoBoard.CheckNumber(currentNumber);
                 if (bingoBoard.HasBingo)
                 {
                     _winnerBoard = bingoBoard;
-                    return;
+                    if (regularGameVersion)
+                    {
+                        return;
+                    }
+
+                    // in case trying to find last winning board we wait until one board is left to get bingo
+                    if (_boards.Count > 1)
+                    {
+                        _boards.Remove(bingoBoard);
+                    }
                 }
             }
+        }
+
+        public BingoBoard GetLastWinningBoard()
+        {
+            _currentNumberIndex = 0;
+            var regularGameVersion = false;
+            while (_boards.Any(b => b.HasBingo == false))
+            {
+                var currentNumber = TakeNextNumber();
+                CheckBoardsForCurrentNumber(currentNumber, regularGameVersion);
+            }
+
+            return _boards[0];
         }
 
         internal void ProcessData(string dataLines)

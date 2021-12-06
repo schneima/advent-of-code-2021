@@ -13,7 +13,7 @@ namespace AdventOfCode20221
             var sut = new BingoSubsystem();
             sut.ProcessData(sampleData);
 
-            sut.StartGame();
+            sut.StartRegularGame();
             var winnerBoard = sut.GetWinnerBoard();
             var sumOfUnmarkedNumbers = winnerBoard.GetSumOfUnmarkedNumbers();
             var lastTakenNumber = sut.GetLastTakenNumber();
@@ -24,6 +24,48 @@ namespace AdventOfCode20221
         }
 
         [Test]
+        public void Get_last_winning_bingo_board_score_by_sample_data()
+        {
+            var sampleData = GetSampleData();
+
+            var sut = new BingoSubsystem();
+            sut.ProcessData(sampleData);
+
+            var loserBoard = sut.GetLastWinningBoard();
+            var sumOfUnmarkedNumbers = loserBoard.GetSumOfUnmarkedNumbers();
+            var lastTakenNumber = sut.GetLastTakenNumber();
+
+            var calculatedScore = sumOfUnmarkedNumbers * lastTakenNumber;
+
+            const int expectedSum = 148;
+            const int expectedLastTakenNumber = 13;
+            const int expectedScore = 1924;
+            Assert.AreEqual(expectedSum, sumOfUnmarkedNumbers);            
+            Assert.AreEqual(expectedLastTakenNumber, lastTakenNumber);            
+
+            Assert.AreEqual(expectedScore, calculatedScore);            
+        }
+
+        [Test]
+        public void Get_last_winning_bingo_board_score_by_task_data()
+        {
+            var sampleData = GetBingoLines();
+
+            var sut = new BingoSubsystem();
+            sut.ProcessData(sampleData);
+
+            var loserBoard = sut.GetLastWinningBoard();
+            var sumOfUnmarkedNumbers = loserBoard.GetSumOfUnmarkedNumbers();
+            var lastTakenNumber = sut.GetLastTakenNumber();
+
+            var calculatedScore = sumOfUnmarkedNumbers * lastTakenNumber;
+
+            Console.WriteLine($"sumOfUnmarkedNumbers: {sumOfUnmarkedNumbers}");
+            Console.WriteLine($"lastTakenNumber: {lastTakenNumber}");
+            Console.WriteLine($"calculatedScore: {calculatedScore}");
+        }
+
+        [Test]
         public void Get_bingo_score_by_task_data()
         {
             var taskData = GetBingoLines();
@@ -31,7 +73,7 @@ namespace AdventOfCode20221
             var sut = new BingoSubsystem();
             sut.ProcessData(taskData);
 
-            sut.StartGame();
+            sut.StartRegularGame();
             var winnerBoard = sut.GetWinnerBoard();
             var sumOfUnmarkedNumbers = winnerBoard.GetSumOfUnmarkedNumbers();
             var lastTakenNumber = sut.GetLastTakenNumber();
