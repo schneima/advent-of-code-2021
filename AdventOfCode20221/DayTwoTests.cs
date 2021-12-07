@@ -23,7 +23,8 @@ namespace AdventOfCode20221
         [Test]
         public void Test_real_day_two_input()
         {
-            string[] commandsFromFile = GetCommandsFromFile();
+            var fileToRead = "input-day-two.txt";
+            string[] commandsFromFile = TestHelper.GetLinesFromFile(fileToRead);
             var sut = new SonarSweeper();
             var position = sut.GetPositionResultBy(commandsFromFile);
             Console.WriteLine($"Depth: {position.Depth}");
@@ -46,19 +47,14 @@ namespace AdventOfCode20221
         [Test]
         public void Get_position_including_aim_real_input()
         {
-            string[] commandsFromFile = GetCommandsFromFile();
+            var fileToRead = "input-day-two.txt";
+            string[] commandsFromFile = TestHelper.GetLinesFromFile(fileToRead);
             var sut = new SonarSweeper();
             var position = sut.GetPositionResultBy(commandsFromFile);
 
             Console.WriteLine($"Depth: {position.Depth}");
             Console.WriteLine($"Horizontal position: {position.HorizontalPosition}");
             Console.WriteLine($"Multiplied result: {position.MultipliedValue}");
-        }
-
-        private string[] GetCommandsFromFile()
-        {
-            var lines = File.ReadAllLines("input-day-two.txt");
-            return lines;
         }
     }
 }
