@@ -7,4 +7,10 @@ internal static class TestHelper
         var lines = File.ReadAllLines(fileToRead);
         return lines;
     }
+
+    internal static string GetStringFromFile(string fileToRead)
+    {
+        var content = File.ReadAllText(fileToRead);
+        return content;
+    }
 }

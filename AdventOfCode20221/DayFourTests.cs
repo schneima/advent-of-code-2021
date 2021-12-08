@@ -49,7 +49,7 @@ namespace AdventOfCode20221
         [Test]
         public void Get_last_winning_bingo_board_score_by_task_data()
         {
-            var sampleData = GetBingoLines();
+            var sampleData = TestHelper.GetStringFromFile("input-day-four.txt");
 
             var sut = new BingoSubsystem();
             sut.ProcessData(sampleData);
@@ -68,8 +68,7 @@ namespace AdventOfCode20221
         [Test]
         public void Get_bingo_score_by_task_data()
         {
-            var taskData = GetBingoLines();
-
+            var taskData = TestHelper.GetStringFromFile("input-day-four.txt");
             var sut = new BingoSubsystem();
             sut.ProcessData(taskData);
 
@@ -113,12 +112,6 @@ namespace AdventOfCode20221
             var entireGameData = string.Join(Environment.NewLine, sampleData);
 
             return entireGameData;
-        }
-
-        private string GetBingoLines()
-        {
-            var lines = File.ReadAllText("input-day-four.txt");
-            return lines;
         }
     }
 }
