@@ -1,5 +1,4 @@
 ﻿using System.Drawing;
-using System.Linq.Expressions;
 
 namespace AdventOfCode20221;
 
@@ -8,6 +7,7 @@ internal class VentsCalculator
     private readonly string[] _rawData;
     private static string LineSeparator = "->";
     private readonly OceanFloor _oceanFloor;
+    private bool _supportDiagonalLines;
 
     /*
     affected lines by deciding if lines is horizontal or vertical (fix row/col index is known)
@@ -25,25 +25,18 @@ internal class VentsCalculator
 
     public int GetNumberOfPointsWithOverlappingLines()
     {
-        var pointsWithOverlappingLines = 0;
-        foreach (var oceanFloorPoint in _oceanFloor.Points)
-        {
-            if (oceanFloorPoint.Value > 1)
-                pointsWithOverlappingLines++;
-        }
-
-        return pointsWithOverlappingLines;
+        return _oceanFloor.Points.Count(oceanFloorPoint => oceanFloorPoint.Value > 1);
     }
 
-    public void ProcessData()
+    public void ProcessData(bool supportDiagonalLines = false)
     {
+        _supportDiagonalLines = supportDiagonalLines;
         foreach (var line in _rawData)
         {
             ProcessLine(line);
         }
 
-        var dimension = _oceanFloor.Points.Max(p => p.Key.X);
-
+        // var dimension = _oceanFloor.Points.Max(p => p.Key.X);
         //// log current ocean floor
         //for (int rowIndes = 0; rowIndes < dimension +1; rowIndes++)
         //{
@@ -54,9 +47,8 @@ internal class VentsCalculator
     private void PrintLine(int rowIndex, int dimension)
     {
         var pointsLineI = _oceanFloor.Points.Where(p => p.Key.Y == rowIndex);
-        for (int columnIndex = 0; columnIndex < dimension +1; columnIndex++)
+        for (int columnIndex = 0; columnIndex < dimension + 1; columnIndex++)
         {
-
             var valueInPoint = pointsLineI.Where(p => p.Key.X == columnIndex);
             if (valueInPoint.Any())
             {
@@ -97,6 +89,52 @@ internal class VentsCalculator
 
                     break;
                 }
+
+            case Orientation.Diagonal:
+                {
+                    if (_supportDiagonalLines)
+                    {  
+                        UpdateOceanFloorByDiagonalLine(line);
+                    }
+                }
+                break;
+        }
+    }
+
+    public void UpdateOceanFloorByDiagonalLine(Line line)
+    {
+        // at this point we can assume startpoint.x < entpoint.y (see GetLineByRawData)
+        // check weather line goes "up" (decrease of y value) or "down" (increase of y value)
+        // to decided in which direction for loop must go
+        var startYIndex = line.StartOfLine.Y;
+        var endYIndex = line.EndOfLine.Y;
+        var lineGoesUp = startYIndex > endYIndex;
+        if (lineGoesUp)
+        {
+            var xIndexTomark = line.StartOfLine.X;
+
+            // we have to loop from start y down to end y
+            for (int y = startYIndex; y >= endYIndex; y--)
+            {
+                var yIndexTomark = y;
+                _oceanFloor.IncreaseNumberOfLinesToPoint(xIndexTomark, yIndexTomark);
+
+                xIndexTomark++;
+            }
+        }
+        else
+        {
+            var xIndexTomark = line.StartOfLine.X;
+
+            // we have to loop from start y up to end y
+            for (int y = startYIndex; y <= endYIndex; y++)
+            {
+                var yIndexTomark = y;
+                _oceanFloor.IncreaseNumberOfLinesToPoint(xIndexTomark, yIndexTomark);
+
+                xIndexTomark++;
+            }
+
         }
     }
 
@@ -125,7 +163,8 @@ internal class VentsCalculator
             }
 
             return new Line(startOfLine, endOfLine);
-        }else
+        }
+        else
         {
             // catches        (pointA.Y == pointB.Y)
             // horizontal lines also rest

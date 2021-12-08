@@ -29,6 +29,38 @@ namespace AdventOfCode20221
         }
 
         [Test]
+        public void Get_number_of_points_overlap_at_least_two_lines_by_sample_data_part_two()
+        {
+            var sampleData = GetSampleData();
+            VentsCalculator sut = new VentsCalculator(sampleData);
+            var supportDiagonalLines = true;
+            sut.ProcessData(supportDiagonalLines);
+            var calculatedNumberOfOverlappingLines = sut.GetNumberOfPointsWithOverlappingLines();
+            int expectedNumberOfOverlappingLines = 12;
+            Assert.AreEqual(expectedNumberOfOverlappingLines, calculatedNumberOfOverlappingLines);
+        }
+
+        [Test]
+        public void Get_number_of_points_overlap_at_least_two_lines_by_task_data_part_two()
+        {
+            const string fileToRead = "input-day-five.txt";
+            var taskData = TestHelper.GetLinesFromFile(fileToRead);
+            VentsCalculator sut = new VentsCalculator(taskData);
+            var supportDiagonalLines = true;
+            sut.ProcessData(supportDiagonalLines);
+            var calculatedNumberOfOverlappingLines = sut.GetNumberOfPointsWithOverlappingLines();
+            Console.WriteLine($"calculatedNumberOfOverlappingLines: {calculatedNumberOfOverlappingLines}");
+        }
+
+        [Test]
+        public void Mark_diagonal_line()
+        {
+            var sut = new VentsCalculator(null);
+            // sut.UpdateOceanFloorByDiagonalLine(new Line(new Point(0, 3), new Point(2, 1)));
+            sut.UpdateOceanFloorByDiagonalLine(new Line(new Point(1, 0), new Point(3, 2)));
+        }
+
+        [Test]
         public void Get_point_by_line_part()
         {
             var p = VentsCalculator.GetPointByLinePart("9,4");

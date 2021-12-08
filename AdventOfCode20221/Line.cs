@@ -26,9 +26,21 @@ internal class Line
         {
             LineOrientation = Orientation.Horizontal;
         }
+        else if (IsLineDiagonal())
+        {
+            LineOrientation = Orientation.Diagonal;
+        }
         else
         {
             LineOrientation = Orientation.Other;
         }
+    }
+
+    private bool IsLineDiagonal()
+    {
+        // x / y diffs must be same
+        var xDiff = Math.Abs(StartOfLine.X - EndOfLine.X);
+        var yDiff = Math.Abs(StartOfLine.Y - EndOfLine.Y);
+        return yDiff == xDiff;
     }
 }
