@@ -28,7 +28,7 @@ namespace AdventOfCode20221
 
         [TestCase(18, 26)]
         [TestCase(80, 5934)]
-        [Ignore("TBD: a more performant solution required"), TestCase(256, 26984457539)]
+        [TestCase(256, 26984457539, Ignore = "TBD: a more performant solution required")]
         public void Laternfish_swarm_test(int daysTest, Int64 expectedNumberOfFishes)
         {
             Stopwatch sw = new Stopwatch();
